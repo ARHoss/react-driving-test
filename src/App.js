@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate  } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import HomePage from './HomePage';
 import ProfileWrapper from './ProfileWrapper';
@@ -9,38 +9,68 @@ import ProfileWrapper from './ProfileWrapper';
 function App() {
 
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/current_user")
-      .then(response => {
-        // If the response was successful, decode the JSON
-        if (response.ok) {
-          return response.json();
-        } 
-        // If a 401 Unauthorized was received, handle it
-        else if (response.status === 401) {
-          throw new Error('Unauthorized');
-        } 
-        // For other errors, just throw an error
-        else {
-          throw new Error('Network response was not ok.');
+
+    const currentPath = window.location.pathname;
+
+    if (currentPath === "/" || currentPath === "/login") {
+      // If the user is on the HomePage or LoginPage, simply return.
+      return;
+    }
+
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/current_user", {
+          credentials: 'include' // Ensuring session cookies are sent with the request
+        });
+  
+        // Handle different response statuses
+        if (!response.ok || response.status === 204) {
+          throw new Error('No user data');
         }
-      })
-      .then(data => setUser(data))
-      .catch(error => {
-        // This will catch errors from the fetch, decoding JSON, or the above errors
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        }
+  
+        const data = await response.json();
+        setUser(data);
+  
+      } catch (error) {
         if (error.message === 'Unauthorized') {
           console.log("User is not authenticated");
         } else {
           console.error("Error fetching user data:", error);
         }
-      });
+      }
+
+      setIsLoading(false);  // Set this at the very end of your useEffect
+
+    };
+  
+    fetchCurrentUser();
   }, []);
+  
 
 
-  const handleLogout = () => {
-    // Implement your logout logic here (like sending a request to the backend to end the session)
-    setUser(null);
+  const handleLogout = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/logout', {
+            method: 'GET',
+            credentials: 'include' // Important to include credentials so the cookies get sent
+        });
+
+        if (response.ok) {
+            console.log('Successfully logged out.');
+            setUser(null);
+
+        } else {
+            console.error('Failed to logout.');
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
   };
 
 
@@ -58,7 +88,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/profile" element={<ProfileWrapper user={user} onLogout={handleLogout} />} />
+              <Route path="/profile" element={!isLoading ? (user ? <ProfileWrapper user={user} onLogout={handleLogout} /> : <Navigate to="/" />) : <div>Loading...</div>} />
             </Routes>
 
 
