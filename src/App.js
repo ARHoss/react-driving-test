@@ -22,7 +22,7 @@ function App() {
 
     const fetchCurrentUser = async () => {
       try {
-        const response = await fetch("http://localhost:3000/current_user", {
+        const response = await fetch("https://g66q9g-3000.csb.app/current_user", {
           credentials: 'include' // Ensuring session cookies are sent with the request
         });
   
@@ -56,7 +56,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-        const response = await fetch('http://localhost:3000/logout', {
+        const response = await fetch('https://g66q9g-3000.csb.app/logout', {
             method: 'GET',
             credentials: 'include' // Important to include credentials so the cookies get sent
         });
