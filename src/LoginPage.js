@@ -1,25 +1,23 @@
 // src/LoginPage.js
-import React from 'react';
+import React from "react";
 
 function LoginPage() {
-
-  const handleLogin = async (event) => {
+  const handleLogin = async event => {
     event.preventDefault();
-  
+
     const email = event.target.email.value;
     const password = event.target.password.value;
-  
+
     try {
-      const response = await fetch('http://localhost:3000/login', {
-        method: 'POST',
+      const response = await fetch("https://g66q9g-3000.csb.app/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include'  // Important for sessions
+        credentials: "include" // Important for sessions
       });
 
-  
       if (!response.ok) {
         const data = await response.json();
         // Handle errors - show user feedback, etc.
@@ -33,20 +31,29 @@ function LoginPage() {
     }
   };
 
-
   return (
     <form onSubmit={handleLogin}>
       <div className="container">
         <h1 className="title">Login</h1>
         <div>
-          <input className="input" type="email" placeholder="Email" name='email'/>
-          <input className="input" type="password" placeholder="Password" name='password'/>
-          <button className="button is-primary" type='submit'>Submit</button>
+          <input
+            className="input"
+            type="email"
+            placeholder="Email"
+            name="email"
+          />
+          <input
+            className="input"
+            type="password"
+            placeholder="Password"
+            name="password"
+          />
+          <button className="button is-primary" type="submit">
+            Submit
+          </button>
         </div>
       </div>
-
     </form>
-    
   );
 }
 
