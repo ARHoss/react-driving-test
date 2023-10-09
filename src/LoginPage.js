@@ -9,13 +9,8 @@ function LoginPage() {
     const password = event.target.password.value;
 
     try {
-<<<<<<< HEAD
       const response = await fetch("https://g66q9g-3000.csb.app/login", {
         method: "POST",
-=======
-      const response = await fetch('https://g66q9g-3000.csb.app/login', {
-        method: 'POST',
->>>>>>> b0467d554e8b01042a2479cb3b3a3f863c6f37a7
         headers: {
           "Content-Type": "application/json"
         },
